@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DSA Instructor</title>
+    <style>
+        :root {
+            --bg-dark: #0f0f1a;
+            --bg-darker: #0a0a12;
+            --primary: #00f0ff;
+            --primary-dark: #00a4ff;
+            --secondary: #ff00f0;
+            --text-main: #e0e0ff;
+            --text-secondary: #b0b0d0;
+            --card-bg: rgba(20, 20, 40, 0.8);
+            --card-border: rgba(0, 240, 255, 0.2);
+            --input-bg: rgba(30, 30, 60, 0.8);
+            --button-bg: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            --button-hover: linear-gradient(135deg, #00c8ff, #0084ff);
+            --glow: 0 0 15px rgba(0, 240, 255, 0.5);
+            --glow-secondary: 0 0 15px rgba(255, 0, 240, 0.3);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        @font-face {
+            font-family: 'Rajdhani';
+            src: url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;700&display=swap');
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Rajdhani', 'Segoe UI', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-main);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(0, 240, 255, 0.05) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(255, 0, 240, 0.05) 0%, transparent 20%);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--card-border);
+            position: relative;
+        }
+
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 25%;
+            width: 50%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: 1px;
+            text-shadow: var(--glow-secondary);
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            font-weight: 400;
+            max-width: 600px;
+            margin: 0 auto;
+            letter-spacing: 0.5px;
+        }
+
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            height: 100%;
+        }
+
+        .response-area {
+            background: var(--card-bg);
+            backdrop-filter: blur(8px);
+            border-radius: 16px;
+            padding: 2rem;
+            flex: 1;
+            overflow-y: auto;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            font-size: 1.05rem;
+            line-height: 1.7;
+            color: var(--text-main);
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .response-area::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+
+        .response-area pre {
+            background: rgba(0, 0, 30, 0.6);
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            border: 1px solid var(--primary);
+            box-shadow: var(--glow);
+            position: relative;
+        }
+
+        .response-area pre::before {
+            content: 'Code';
+            position: absolute;
+            top: -10px;
+            left: 15px;
+            background: var(--primary);
+            color: var(--bg-dark);
+            font-size: 0.7rem;
+            font-weight: bold;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .response-area code {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.95rem;
+            color: var(--primary);
+        }
+
+        .input-container {
+            position: relative;
+            margin-top: auto;
+        }
+
+        .input-area {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+            background: var(--input-bg);
+            backdrop-filter: blur(8px);
+            border-radius: 16px;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transition: var(--transition);
+        }
+
+        .input-area:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(0, 240, 255, 0.2), var(--glow);
+        }
+
+        #user-input {
+            flex: 1;
+            padding: 0.9rem;
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            font-size: 1.05rem;
+            outline: none;
+            resize: none;
+            min-height: 60px;
+            max-height: 150px;
+            font-family: inherit;
+            letter-spacing: 0.5px;
+        }
+
+        #user-input::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.7;
+        }
+
+        #submit-btn {
+            padding: 0.9rem 1.5rem;
+            background: var(--button-bg);
+            color: var(--bg-dark);
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 100px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(0, 164, 255, 0.4);
+        }
+
+        #submit-btn:hover {
+            background: var(--button-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 164, 255, 0.6);
+        }
+
+        #submit-btn:active {
+            transform: translateY(0);
+        }
+
+        #submit-btn:disabled {
+            background: #555;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            color: #999;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(0, 0, 0, 0.2);
+            border-radius: 50%;
+            border-top-color: var(--bg-dark);
+            animation: spin 1s ease-in-out infinite;
+            margin-left: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+        }
+
+        .message {
+            margin-bottom: 2rem;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .user-message {
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .user-message::before {
+            content: '➤';
+            color: var(--secondary);
+        }
+
+        .ai-message {
+            white-space: pre-wrap;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .ai-message::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--primary), var(--secondary));
+        }
+
+        .example-questions {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .example-question {
+            background: rgba(0, 164, 255, 0.1);
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            border-radius: 12px;
+            padding: 1rem;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .example-question:hover {
+            background: rgba(0, 164, 255, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 164, 255, 0.2);
+        }
+
+        .example-question::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.1), transparent);
+            transition: 0.5s;
+        }
+
+        .example-question:hover::after {
+            left: 100%;
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-darker);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--secondary);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1.5rem 1rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .response-area {
+                padding: 1.5rem;
+            }
+            
+            .input-area {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            #submit-btn {
+                width: 100%;
+                padding: 1rem;
+            }
+
+            .example-questions {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;700&family=Fira+Code:wght@400&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>DSA INSTRUCTOR</h1>
+            <p class="subtitle">Your personal guide to mastering Data Structures and Algorithms</p>
+        </header>
+
+        <div class="chat-container">
+            <div class="response-area" id="response-area">
+                <div class="message">
+                    <div class="ai-message">
+                        Welcome to your cyber DSA mentor! I specialize in Data Structures and Algorithms concepts with clear explanations and code examples.
+
+                        <div class="example-questions">
+                            <div class="example-question" onclick="insertExample('Explain time complexity with examples')">
+                                <strong>Time Complexity</strong>
+                                <div style="color: var(--text-secondary); font-size: 0.8em; margin-top: 4px;">Big O notation explained</div>
+                            </div>
+                            <div class="example-question" onclick="insertExample('How does QuickSort work? Show Python implementation')">
+                                <strong>QuickSort</strong>
+                                <div style="color: var(--text-secondary); font-size: 0.8em; margin-top: 4px;">Algorithm + Python code</div>
+                            </div>
+                            <div class="example-question" onclick="insertExample('Compare arrays and linked lists')">
+                                <strong>Arrays vs Linked Lists</strong>
+                                <div style="color: var(--text-secondary); font-size: 0.8em; margin-top: 4px;">Pros, cons, and use cases</div>
+                            </div>
+                            <div class="example-question" onclick="insertExample('Explain Dijkstra\'s algorithm with Java code')">
+                                <strong>Dijkstra's Algorithm</strong>
+                                <div style="color: var(--text-secondary); font-size: 0.8em; margin-top: 4px;">Graph traversal with Java</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-container">
+                <div class="input-area">
+                    <textarea id="user-input" placeholder="Ask any DSA question... (Shift+Enter for new line)" rows="1" autocomplete="off"></textarea>
+                    <button id="submit-btn">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        DSA Instructor v2.0 • Specialized in Data Structures and Algorithms • Press Enter to send
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const userInput = document.getElementById('user-input');
+            const submitBtn = document.getElementById('submit-btn');
+            const responseArea = document.getElementById('response-area');
+
+            // Auto-resize textarea
+            userInput.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+            });
+
+            // Focus on input when page loads
+            userInput.focus();
+
+            // Handle Enter key press (Shift+Enter for new line)
+            userInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    submitBtn.click();
+                }
+            });
+
+            // Handle submit button click
+            submitBtn.addEventListener('click', async function() {
+                const question = userInput.value.trim();
+                
+                if (!question) {
+                    userInput.focus();
+                    return;
+                }
+
+                // Disable button and show loading
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = 'Processing <span class="loading"></span>';
+                userInput.disabled = true;
+
+                // Add user question to response area
+                const userMessage = document.createElement('div');
+                userMessage.className = 'message';
+                userMessage.innerHTML = `
+                    <div class="user-message">You</div>
+                    <div class="ai-message">${escapeHtml(question)}</div>
+                `;
+                responseArea.appendChild(userMessage);
+
+                const thinkingMessage = document.createElement('div');
+                thinkingMessage.className = 'message';
+                thinkingMessage.innerHTML = `
+                    <div class="user-message">DSA Instructor</div>
+                    <div class="ai-message"><i>Typing...</i></div>
+                `;
+                responseArea.appendChild(thinkingMessage);
+                responseArea.scrollTop = responseArea.scrollHeight;
+
+                try {
+                    const response = await fetchDSAAnswer(question);
+                    thinkingMessage.innerHTML = `
+                        <div class="user-message">DSA Instructor</div>
+                        <div class="ai-message">${formatResponse(response)}</div>
+                    `;
+                } catch (error) {
+                    console.error('Error:', error);
+                    thinkingMessage.innerHTML = `
+                        <div class="user-message">DSA Instructor</div>
+                        <div class="ai-message">⚠️ Network error. Please try again.</div>
+                    `;
+                } finally {
+                    // Re-enable button and input
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Send';
+                    userInput.disabled = false;
+                    userInput.value = '';
+                    userInput.style.height = 'auto';
+                    userInput.focus();
+                    responseArea.scrollTop = responseArea.scrollHeight;
+                }
+            });
+
+            function escapeHtml(unsafe) {
+                return unsafe
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+            }
+
+            function formatResponse(text) {
+                // Format code blocks
+                let formattedText = text.replace(/```(\w*)([\s\S]*?)```/g, function(match, lang, code) {
+                    return `<pre><code>${escapeHtml(code.trim())}</code></pre>`;
+                });
+                
+                // Format inline code
+                formattedText = formattedText.replace(/`([^`]+)`/g, '<code>$1</code>');
+                
+                // Format lists
+                formattedText = formattedText.replace(/^\s*\*\s+(.*$)/gm, '<li>$1</li>');
+                formattedText = formattedText.replace(/(<li>.*<\/li>)+/g, '<ul>$&</ul>');
+                
+                return formattedText;
+            }
+
+            async function fetchDSAAnswer(question) {
+                const apiKey = "AIzaSyA6B1ZqdUCrHzsGGa5RBtH3LPbLEB6hlTc";
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+                
+                const requestBody = {
+                    contents: {
+                        parts: [{
+                            text: question
+                        }]
+                    },
+                    systemInstruction: {
+                        parts: [{
+                            text: `You are a highly knowledgeable and specialized DSA (Data Structures and Algorithms) instructor. You must ONLY answer questions strictly related to DSA topics, such as arrays, linked lists, trees, graphs, recursion, dynamic programming, searching, sorting, complexity analysis, etc. If the user asks anything outside the scope of DSA, politely respond with:
+
+                        "Sorry, I can only help with Data Structures and Algorithms-related questions."
+
+                        You should provide clear, concise, and beginner-friendly explanations with code examples (preferably in C++, Java, or Python if asked). Format code examples with Markdown code blocks. Avoid small talk, jokes, or unrelated information. and you should give the response in simple and easiest way`
+                        }]
+                    }
+                };
+
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API request failed with status ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts) {
+                    return data.candidates[0].content.parts[0].text;
+                } else {
+                    throw new Error('Unexpected API response format');
+                }
+            }
+        });
+
+        function insertExample(question) {
+            const userInput = document.getElementById('user-input');
+            userInput.value = question;
+            userInput.focus();
+            userInput.dispatchEvent(new Event('input'));
+        }
+    </script>
+</body>
+</html>
